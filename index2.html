@@ -157,12 +157,12 @@
         <div id="expedition">
             <div id="status" ng-controller="statusController as vm">
                 <span class="grey">
-                    <span class="small">{{vm.status.date}}</span> 
-                    {{vm.status.time}} &nbsp;&nbsp;&nbsp; 
+                    <span class="small">{{vm.data.date}}</span> 
+                    {{vm.data.time}} &nbsp;&nbsp;&nbsp; 
                     {{vm.lastLogEntry().freq}} {{vm.lastLogEntry().mode}}
                 </span><br/>
-                <span class="small">RDA</span> {{vm.status.rda}} &nbsp; 
-                <span class="small">RAFA</span> {{vm.status.rafa}} &nbsp; {{vm.status.loc}}
+                <span class="small">RDA</span> {{vm.data.rda}} &nbsp; 
+                <span class="small">RAFA</span> {{vm.data.rafa}} &nbsp; {{vm.data.loc}}
             </div>
             <a href="/"><img id="logo" src="/images/r7ab_logo3.jpg" border="0" height="39" width="150"></a><br/>
             {{vm.title}}
@@ -194,7 +194,7 @@
         <div id="list" ng-controller="tabsController as vmTabs">
             
             <div id="news" ng-show="vmTabs.active() == 'news'" ng-controller="newsController as vm">
-                <div class="date" ng-repeat-start="item in vm.news">{{item.time}}</div>
+                <div class="date" ng-repeat-start="item in vm.data">{{item.time}}</div>
                 <div class="info" ng-repeat-end ng-bind-html="item.text"></div>               
             </div>
                         
@@ -214,7 +214,43 @@
                         <td class="wff head">wff</td>
                         <td class="locator head">locator</td>
                     </tr>
-                    <tr ng-repeat="spot in vm.spots">
+                    <tr ng-repeat="spot in vm.data">
+                        <td class="mycall">{{spot.myCS}}</td>
+                        <td class="date">{{spot.date}}</td>
+                        <td class="time">{{spot.time}}</td>
+                        <td class="band">{{spot.freq}}</td>
+                        <td class="mode">{{spot.mode}}</td>
+                        <td class="urcall">{{spot.cs}}</td>
+                        <td class="rst">{{spot.rcv}}/{{spot.snt}}</td>
+                        <td class="rda">{{spot.rda}}</td>
+                        <td class="rafa">{{spot.rafa}}</td>
+                        <td class="wff">{{spot.wff}}</td>
+                        <td class="locator">{{spot.loc}}</td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div id="call_check" ng-show="vmTabs.active() == 'check'" ng-controller="checkController as vm">
+                <div id="call_check_form">
+                    <input type="text" id="input_call" ng-model="vm.cs"/> 
+                    <button ng-click="vm.check()">Call check</button>
+                </div>
+                <table id="log" ng-if="vm.found">
+                    <tr>
+                        <td class="mycall" style="border-top:none; border-left: none;">&nbsp;</td>
+                        <td class="date head">date</td>
+                        <td class="time head">time</td>
+                        <td class="band head">band</td>
+                        <td class="mode head">mode</td>
+                        <td class="urcall head">callsign</td>
+                        <td class="rst head">rst/rst</td>
+                        <td class="rda head">rda</td>
+                        <td class="rafa head">rafa</td>
+                        <td class="wff head">wff</td>
+                        <td class="locator head">locator</td>
+                    </tr>
+                    <tr ng-repeat="spot in vm.found">
                         <td class="mycall">{{spot.myCS}}</td>
                         <td class="date">{{spot.date}}</td>
                         <td class="time">{{spot.time}}z</td>
@@ -228,14 +264,6 @@
                         <td class="locator">{{spot.loc}}</td>
                     </tr>
                 </table>
-            </div>
-
-
-            <div id="call_check" ng-show="vmTabs.active() == 'check'" ng-controller="checkController as vm">
-                <div id="call_check_form">
-                    <input type="text" id="input_call" ng-value="vm.cs"/> 
-                    <button ng-click="vm.check()">Call check</button>
-                </div>
             </div>
 
 
@@ -258,7 +286,7 @@
 
             <div id="cluster" ng-show="vmTabs.active() == 'adxcluster'">
                 <table id="cluster" ng-controller="spotsController as vm">
-                    <tr ng-repeat="spot in vm.spots track by $index">
+                    <tr ng-repeat="spot in vm.data track by $index">
                         <td class="time">{{spot.time}}z</td>
                         <td class="band">{{spot.freq}}</td>
                         <td class="mode">{{spot.subMode ? spot.subMode : spot.mode}}</td>

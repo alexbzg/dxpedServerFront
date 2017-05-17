@@ -5,6 +5,7 @@ angular
     .service( 'Spots', Spots )
     .service( 'News', News )
     .service( 'Tabs', Tabs )
+    .service( 'Log', Log )
     .service( 'Status', Status )
     .controller( 'newsController', newsController )
     .controller( 'spotsController', spotsController )
@@ -14,10 +15,29 @@ angular
     .controller( 'checkController', checkController )
     .controller( 'logController', logController )
     .controller( 'chatController', chatController )
-  
    ;
 
-function KidsTrack( $http ) {
+function DataController( DataService, interval, $interval ) {
+    var vm = this;
+    vm.processData = function() {};
+    load();
+    $interval( load, 60000 );
+    
+    
+    function load() {
+        DataService.load()
+            .then( function( data ) {
+                    if ( data ) {
+                        vm.data = data;
+                        vm.processData();
+                    }
+                });
+    }
+
+
+}
+
+function KidsTrack( DataServiceFactory ) {
     var s = DataServiceFactory( "/rda/kidsTrack.json" );
     s.processData = processData;
         
@@ -40,6 +60,19 @@ function Status( DataServiceFactory ) {
     return DataServiceFactory( "/rda/status.json" );
 }
 
+function Log( DataServiceFactory ) {
+    var s = DataServiceFactory( "/rda/qso.json" );
+    s.lastEntry = lastEntry;
+
+    return s;
+
+    function lastEntry() {
+        if ( s.data && s.data.length > 0 )
+            return s.data[0];
+        else
+            return null;
+    }
+}
 
 function Tabs() {
     var active = 'map';
@@ -89,21 +122,8 @@ function News( DataServiceFactory ) {
 }
 
 function newsController( News, $interval ) {
-    var vm = this;
-
-    loadNews();
-    $interval( loadNews, 60000 );
-    
-    return vm;
-
-    function loadNews() {
-        News.load()
-            .then( function( data ) {
-                    if ( data )
-                        vm.news = data;
-                });
-    }
-
+    DataController.call( this, News, 60000, $interval );
+    return this;
 }
 
 function tabsController( Tabs ) {
@@ -113,9 +133,9 @@ function tabsController( Tabs ) {
     return vm;
 }
 
-function logController() {
-    var vm = this;
-    return vm;
+function logController( Log, $interval ) {
+    DataController.call( this, Log, 60000, $interval );
+    return this;
 }
 
 function chatController() {
@@ -123,63 +143,51 @@ function chatController() {
     return vm;
 }
 
-function checkController() {
+function checkController( Log ) {
     var vm = this;
-    return vm;
-}
-
-function statusController( Status, $interval ) {
-    var vm = this;
-
-    loadStatus();
-    $interval( loadStatus, 60000 );
-
+    vm.check = check;
     return vm;
 
-    function loadStatus() {
-        Status.load()
-            .then( function( data ) {
-                if (data)
-                    vm.status = data;
+    function check() {
+        if ( Log.data ) {
+            vm.found = Log.data.filter( function( item ) {
+                return item.cs == vm.cs; 
             });
+            if ( vm.found.length == 0 )
+                vm.found = false;
+        } else
+            vm.found = false;
     }
 
+}
+
+function statusController( Status, Log, $interval ) {
+    DataController.call( this, Status, 60000, $interval );
+    this.lastLogEntry = Log.lastEntry;
+    return this;
 }
 
 
 function spotsController( Spots, $interval ) {
-    var vm = this;
-
-    loadSpots();
-    $interval( loadSpots, 60000 );
-    
-    return vm;
-
-    function loadSpots() {
-        Spots.load()
-            .then( function( data ) {
-                vm.spots = data;
-                });
-    }
-
+    DataController.call( this, Spots, 60000, $interval );
+    return this;
 }
 
 function mapController( KidsTrack, $interval ) {
+    DataController.call( this, KidsTrack, 60000, $interval );
     var vm = this;
+    vm.processData = processData;
 
     vm.map = {
         center: [ 40, 50 ],
         zoom: 11};
-    
-    loadTrackData();
-    $interval( loadTrackData, 120000 );
 
-    function loadTrackData() {
-        KidsTrack.load()
-            .then( function( data ) {
-                vm.map.center = data.coords;
-                vm.current = data;
-                    });
+    return vm;
+    
+
+    function processData( data ) {
+        vm.map.center = data.coords;
+        vm.current = data;
     }
 
     return vm;
