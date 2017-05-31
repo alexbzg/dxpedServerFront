@@ -155,14 +155,15 @@
 </head>
 <body>
         <div id="expedition">
-            <div id="status" ng-controller="statusController as vm">
+            <div id="status" ng-controller="statusController as vm" ng-if="!vm.logEmpty()">
                 <span class="grey">
-                    <span class="small">{{vm.data.date}}</span> 
-                    {{vm.data.time}} &nbsp;&nbsp;&nbsp; 
+                    <span class="small">{{vm.lastLogEntry().date}}</span> 
+                    {{vm.lastLogEntry().time}} &nbsp;&nbsp;&nbsp; 
                     {{vm.lastLogEntry().freq}} {{vm.lastLogEntry().mode}}
                 </span><br/>
-                <span class="small">RDA</span> {{vm.data.rda}} &nbsp; 
-                <span class="small">RAFA</span> {{vm.data.rafa}} &nbsp; {{vm.data.loc}}
+                <span class="small">RDA</span> {{vm.lastLogEntry().rda}} &nbsp; 
+                <span class="small">RAFA</span> {{vm.lastLogEntry().rafa ? vm.lastLogEntry().rafa : '-'}} 
+                &nbsp; {{vm.lastLogEntry().loc}}
             </div>
             <a href="/"><img id="logo" src="/images/r7ab_logo3.jpg" border="0" height="39" width="150"></a><br/>
             {{vm.title}}
@@ -269,9 +270,10 @@
 
             <div id="gps_map" ng-show="vmTabs.active() == 'map'">
                 <div id="map" ng-controller="mapController as vm">
-                    <yandex-map center="vm.map.center" zoom="vm.map.zoom">
-                        <ymap-marker ng-if="vm.current" properties="{balloonContent:vm.current.ts}" 
-                        coordinates="vm.current.coords"></ymap-marker>
+                    <yandex-map center="vm.data.location" zoom="vm.zoom">
+                        <ymap-marker ng-if="vm.data.ts" 
+                        properties="{balloonContent:vm.data.date + ' ' + vm.data.time}" 
+                        coordinates="vm.data.location"></ymap-marker>
                     </yandex-map>
                 </div>
                 Обновление - каждые 5 минут.

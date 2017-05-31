@@ -1,7 +1,7 @@
 angular
     .module( 'dxpApp', [ 'ymaps', 'ngSanitize' ] )
     .factory( 'DataServiceFactory', DataServiceFactory )
-    .service( 'KidsTrack', KidsTrack )
+    .service( 'Location', Location )
     .service( 'Spots', Spots )
     .service( 'News', News )
     .service( 'Tabs', Tabs )
@@ -10,8 +10,8 @@ angular
     .controller( 'newsController', newsController )
     .controller( 'spotsController', spotsController )
     .controller( 'mapController', mapController )
-    .controller( 'tabsController', tabsController )
     .controller( 'statusController', statusController )
+    .controller( 'tabsController', tabsController )
     .controller( 'checkController', checkController )
     .controller( 'logController', logController )
     .controller( 'chatController', chatController )
@@ -37,19 +37,8 @@ function DataController( DataService, interval, $interval ) {
 
 }
 
-function KidsTrack( DataServiceFactory ) {
-    var s = DataServiceFactory( "/rda/kidsTrack.json" );
-    s.processData = processData;
-        
-    return s;
-
-    function processData() {
-
-        var ts = moment( s.data.ts )
-            .format( 'DD MMM HH:mm' );
-        s.data = { coords: [ s.data.lat, s.data.lng ],
-                    ts: ts };
-    }
+function Location( DataServiceFactory ) {
+    return DataServiceFactory( "/rda/location.json" );
 }
 
 function Spots( DataServiceFactory ) {
@@ -62,7 +51,10 @@ function Status( DataServiceFactory ) {
 
 function Log( DataServiceFactory ) {
     var s = DataServiceFactory( "/rda/qso.json" );
+    var empty = true;
     s.lastEntry = lastEntry;
+    s.isEmpty = isEmpty;
+    s.processData = processData;
 
     return s;
 
@@ -71,6 +63,14 @@ function Log( DataServiceFactory ) {
             return s.data[0];
         else
             return null;
+    }
+
+    function isEmpty() {
+        return empty;
+    }
+
+    function processData() {
+        empty = ( s.data != null ) && ( s.data.length > 0 );
     }
 }
 
@@ -135,8 +135,18 @@ function tabsController( Tabs ) {
 
 function logController( Log, $interval ) {
     DataController.call( this, Log, 60000, $interval );
-    return this;
+    var vm = this;
+    vm.lastLogEntry = Log.lastEntry;
+    return vm;
 }
+
+function statusController( Log ) {
+    var vm = this;
+    vm.lastLogEntry = Log.lastEntry;
+    vm.logEmpty = Log.isEmpty;
+    return vm;
+}
+
 
 function chatController() {
     var vm = this;
@@ -161,34 +171,18 @@ function checkController( Log ) {
 
 }
 
-function statusController( Status, Log, $interval ) {
-    DataController.call( this, Status, 60000, $interval );
-    this.lastLogEntry = Log.lastEntry;
-    return this;
-}
-
 
 function spotsController( Spots, $interval ) {
     DataController.call( this, Spots, 60000, $interval );
     return this;
 }
 
-function mapController( KidsTrack, $interval ) {
-    DataController.call( this, KidsTrack, 60000, $interval );
+function mapController( Location, $interval ) {
+    DataController.call( this, Location, 60000, $interval );
     var vm = this;
-    vm.processData = processData;
 
-    vm.map = {
-        center: [ 40, 50 ],
-        zoom: 11};
-
-    return vm;
-    
-
-    function processData( data ) {
-        vm.map.center = data.coords;
-        vm.current = data;
-    }
+    vm.data = { location: [ 40, 50 ] };
+    vm.zoom = 11;
 
     return vm;
 }
