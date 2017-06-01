@@ -4,6 +4,7 @@ angular
     .service( 'Location', Location )
     .service( 'Spots', Spots )
     .service( 'News', News )
+    .service( 'Chat', Chat )
     .service( 'Tabs', Tabs )
     .service( 'Log', Log )
     .service( 'Status', Status )
@@ -121,6 +122,21 @@ function News( DataServiceFactory ) {
     return DataServiceFactory(  "/rda/news.json" );
 }
 
+function Chat( DataServiceFactory, $http ) {
+    var s = DataServiceFactory(  "/rda/chat.json" );
+    var sendURL = "/uwsgi/chat";
+
+    s.send = send;
+
+    return s;
+
+    function send( data ) {
+        return $http.post( s.url, data )
+    }
+
+}
+
+
 function newsController( News, $interval ) {
     DataController.call( this, News, 60000, $interval );
     return this;
@@ -149,7 +165,9 @@ function statusController( Log ) {
 
 
 function chatController() {
+    DataController.call( this, Chat, 60000, $interval );
     var vm = this;
+
     return vm;
 }
 

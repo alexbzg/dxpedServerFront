@@ -333,9 +333,9 @@
 
                  <table id="message_form">
                     <tr>
-                        <td><input type="text" id="your_call" /></td>
-                        <td><input type="text" id="message_text" /></td>
-                        <td><input type="submit" id="submit_message" value="OK" /></td>
+                        <td><input type="text" id="your_call" ng-model="vm.cs"/></td>
+                        <td><input type="text" id="message_text" ng-model="vm.text"/></td>
+                        <td><button ng-click="vm.send()">OK</button></td>
                     </tr>
                     <tr>
                         <td class="note">your callsign</td>
@@ -345,28 +345,13 @@
                 </table>
 
                 <table id="chat_window">
-                    <tr>
+                    <tr ng-repeat="msg in vm.data"> 
                         <td class="call">
-                            <span class="r7ab">R7AB</span><br/><span class="date_time">25 apr 2017 11:45z</span>
+                            <span class="r7ab">{{msg.cs}}</span><br/>
+                            <span class="date_time">{{msg.date}} {{msg.time}}</span>
                         </td>
                         <td class="message">
-                            Скоро всё будет...
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="call">
-                            WW7WWW/QRP<br/><span class="date_time">25 apr 2017 11:36z</span>
-                        </td>
-                        <td class="message">
-                            Никого пока нет? Никого пока нет? Никого пока нет? Никого пока нет? Никого пока нет? Никого пока нет? Никого пока нет? Никого нет? Никого пока нет? Никого пока нет? Никого пока нет? Никого пока нет? 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="call">
-                            R7CL<br/><span class="date_time">25 apr 2017 11:35z</span>
-                        </td>
-                        <td class="message">
-                            Привет всем в этом чате!
+                            {{msg.text}}
                         </td>
                     </tr>
                 </table>
