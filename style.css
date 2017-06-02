@@ -297,7 +297,6 @@ yandex-map {
     margin: 10px auto;
     text-align: left;
 }
-
 div.date{ 
     font-weight: bold;
     font-size: 12px;
@@ -315,9 +314,13 @@ div.date{
     border: 1px solid #ddd;
     line-height: 1.5em;
 }
+.info div{
+    text-align: center;
+}
 .info img{ 
     border: 1px solid #ddd;
     border-radius: 5px;
+    padding: 2px;
 }
 .red_news{
     color: #900;
@@ -424,3 +427,5 @@ table#chat_window td.message{
     line-height: 1.5em;
     padding-top: 5px;
 }
+
+

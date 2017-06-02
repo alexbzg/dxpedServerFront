@@ -1,5 +1,7 @@
 angular
-    .module( 'dxpApp', [ 'ymaps', 'ngSanitize' ] )
+    .module( 'dxpApp', [ 'ymaps', 'ngSanitize', 'bootstrapLightbox' ] )
+    .directive('compile', compileDirective )
+    .directive( 'lightboxImage', lightboxImage )
     .factory( 'DataServiceFactory', DataServiceFactory )
     .service( 'Location', Location )
     .service( 'Spots', Spots )
@@ -17,6 +19,54 @@ angular
     .controller( 'logController', logController )
     .controller( 'chatController', chatController )
    ;
+
+
+function compileDirective($compile) {
+    return function(scope, element, attrs) {
+        scope.$watch(
+            function(scope) {
+                // watch the 'compile' expression for changes
+                return scope.$eval(attrs.compile);
+            },
+            function(value) {
+                // when the 'compile' expression changes
+                // assign it into the current DOM
+                element.html(value);
+
+                // compile the new DOM and link it to the current
+                // scope.
+                // NOTE: we only compile .childNodes so that
+                // we don't get into infinite loop compiling ourselves
+                $compile(element.contents())(scope);
+            }
+        );
+    };
+}
+
+function lightboxImage( Lightbox ) {
+    return {
+        restrict: 'E',
+        scope: {
+            image: '@',
+            thumb: '@'
+        },
+        controller: lightboxController,
+        controllerAs: 'vm',
+        templateUrl: 'lightboxImage.html',
+        bindToController: true
+    };
+
+    function lightboxController() {
+        var vm = this;
+        vm.openLightbox = openLightbox;
+
+        return vm;
+
+        function openLightbox() {
+            Lightbox.openModal( [{url: vm.image}], 0 );
+        }
+    }
+}
 
 function DataController( DataService, interval, $interval ) {
     var vm = this;
@@ -139,7 +189,9 @@ function Chat( DataServiceFactory, $http ) {
 
 function newsController( News, $interval ) {
     DataController.call( this, News, 60000, $interval );
-    return this;
+    var vm = this;
+    return vm;
+
 }
 
 function tabsController( Tabs ) {
@@ -164,7 +216,7 @@ function statusController( Log ) {
 }
 
 
-function chatController() {
+function chatController( Chat, $interval ) {
     DataController.call( this, Chat, 60000, $interval );
     var vm = this;
 

@@ -11,11 +11,17 @@
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link href="style.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">        
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js"></script>
+        <script src="ui-bootstrap-tpls-2.5.0.min.js"></script>        
+        <script src="angular-bootstrap-lightbox.min.js"></script>        
         <script src="angular-ymaps.min.js"></script>
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
+        <script src="compile.directive.js"></script>
+        <script src="lightboxImage.directive.js"></script>
+
         <script src="rdApp.module.js?version=0.0.0.3"></script>
 
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
@@ -175,7 +181,7 @@
 
             <div id="news" style="display: none;" ng-controller="newsController as vm">
                 <div class="date" ng-repeat-start="item in vm.news">{{item.time}}</div>
-                <div class="info" ng-repeat-end ng-bind-html="item.text"></div>               
+                <div class="info" ng-repeat-end compile="item.text"></div>               
             </div>
                         
 

@@ -1,5 +1,7 @@
 angular
-    .module( 'rdApp', [ 'ymaps', 'ngSanitize' ] )
+    .module( 'rdApp', [ 'ymaps', 'ngSanitize', 'bootstrapLightbox'  ] )
+    .directive('compile', compileDirective )
+    .directive( 'lightboxImage', lightboxImage )
     .service( 'KidsTrack', KidsTrack )
     .service( 'Spots', Spots )
     .service( 'News', News )
