@@ -1,4 +1,4 @@
-angular
+var module = angular
     .module( 'dxpApp', [ 'ymaps', 'ngSanitize', 'bootstrapLightbox' ] )
     .directive('compile', compileDirective )
     .directive( 'lightboxImage', lightboxImage )
@@ -71,6 +71,7 @@ function lightboxImage( Lightbox ) {
 function DataController( DataService, interval, $interval ) {
     var vm = this;
     vm.processData = function() {};
+    vm.load = load;
     load();
     $interval( load, 60000 );
     
@@ -174,15 +175,21 @@ function News( DataServiceFactory ) {
 
 function Chat( DataServiceFactory, $http ) {
     var s = DataServiceFactory(  "/rda/chat.json" );
-    var sendURL = "/uwsgi/chat";
+    var sendURL = "/dxped/uwsgi/chat";
 
     s.send = send;
 
     return s;
 
     function send( data ) {
-        return $http.post( s.url, data )
+        return $http.post( sendURL, data )
+            .catch( sendFailed );
     }
+
+    function sendFailed( error ) {
+        console.log( sendURL + ' XHR failed: ' + error.data );
+    }
+
 
 }
 
@@ -216,11 +223,29 @@ function statusController( Log ) {
 }
 
 
-function chatController( Chat, $interval ) {
+function chatController( Chat, $interval, Storage ) {
     DataController.call( this, Chat, 60000, $interval );
     var vm = this;
 
+    vm.send = send;
+
     return vm;
+
+    function send() {
+        Chat.send( { cs: vm.cs, text: vm.text } )
+            .then( sendComplete )
+            .catch( sendFailed );
+    }
+
+    function sendComplete() {
+        vm.text = "";
+        vm.load();
+    }
+
+    function sendFailed( error ) {
+        window.alert( "Sorry, there was an error. Please try again later" );
+    }
+   
 }
 
 function checkController( Log ) {

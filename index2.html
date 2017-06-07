@@ -21,6 +21,7 @@
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
         <script src="dxpApp.module.js?version=0.0.0.1"></script>
+        <script src="storage.service.js"></script>
 
         <!--script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
         <script type="text/javascript" src="/ilightbox/ilightbox.js"></script>
@@ -276,7 +277,7 @@
             <div id="gps_map" ng-show="vmTabs.active() == 'map'">
                 <div id="map" ng-controller="mapController as vm">
                     <yandex-map center="vm.data.location" zoom="vm.zoom">
-                        <ymap-marker ng-if="vm.data.ts" 
+                        <ymap-marker ng-if="vm.data.location" 
                         properties="{balloonContent:vm.data.date + ' ' + vm.data.time}" 
                         coordinates="vm.data.location"></ymap-marker>
                     </yandex-map>

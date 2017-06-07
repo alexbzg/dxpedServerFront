@@ -46,17 +46,17 @@ input{
 }
 #status{ 
     width: 300px;
-    height: 50px;
+    font-size: 18px;
     background-color: #fff;
     display: inline-block;
     float: right;
     margin: 0;
-    padding: 10px;
+    padding: 7px;
     border: 1px solid #aaa;
     border-radius: 10px;
     box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
     vertical-align: top;
-    line-height: 1.5em;
+    line-height: 1.3em;
     font-weight: bold;
 }
 .on{
