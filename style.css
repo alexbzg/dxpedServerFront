@@ -351,6 +351,7 @@ div.date{
 }
 #call_check_form input#input_call, #login_form input#input_call{
     font-weight: bold;
+    padding: 1px;
 }
 
 
@@ -380,7 +381,8 @@ table#message_form td.note{
 table#message_form input#your_call{
     width: 150px;
     font-weight: bold;
-    padding-top: 7px;
+    font-size: 18px;
+    padding: 1px;
     border: 1px solid #999;
 }
 table#message_form input#message_text{
@@ -420,8 +422,11 @@ table#chat_window td.call span.date_time{
     font-weight: normal;
     color: #777;
 }
-table#chat_window td.call span.r7ab{
-    color: #900;
+table#chat_window td.call span.call{
+    color: #00A;
+}
+table#chat_window tr.admin td.call span.call{
+    color: #A00;
 }
 table#chat_window td.message{
     line-height: 1.5em;

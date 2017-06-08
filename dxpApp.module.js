@@ -122,12 +122,12 @@ function Log( DataServiceFactory ) {
     }
 
     function processData() {
-        empty = ( s.data != null ) && ( s.data.length > 0 );
+        empty = ( s.data == null ) || ( s.data.length == 0 );
     }
 }
 
 function Tabs() {
-    var active = 'map';
+    var active = 'log';
     return {
         active: function() { return active; },
         setActive: function(value) { active = value; }
@@ -212,6 +212,7 @@ function logController( Log, $interval ) {
     DataController.call( this, Log, 60000, $interval );
     var vm = this;
     vm.lastLogEntry = Log.lastEntry;
+    vm.logEmpty = Log.isEmpty;
     return vm;
 }
 
@@ -225,13 +226,17 @@ function statusController( Log ) {
 
 function chatController( Chat, $interval, Storage ) {
     DataController.call( this, Chat, 60000, $interval );
+    var storageKey = 'dxpChatCS';
     var vm = this;
 
+    vm.cs = Storage.load( storageKey, 'local' );
     vm.send = send;
+
 
     return vm;
 
     function send() {
+        Storage.save( storageKey, vm.cs, 'local' );
         Chat.send( { cs: vm.cs, text: vm.text } )
             .then( sendComplete )
             .catch( sendFailed );
@@ -275,10 +280,16 @@ function spotsController( Spots, $interval ) {
 function mapController( Location, $interval ) {
     DataController.call( this, Location, 60000, $interval );
     var vm = this;
+    vm.processData = processData;
 
-    vm.data = { location: [ 40, 50 ] };
-    vm.zoom = 11;
+    vm.map = { center: [ 45, 39 ], zoom: 11 };
 
     return vm;
+
+    function processData() {
+        if ( vm.data.location )
+            vm.map.center = vm.data.location;
+    }
+
 }
 
