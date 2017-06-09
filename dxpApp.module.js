@@ -123,6 +123,9 @@ function Log( DataServiceFactory ) {
 
     function processData() {
         empty = ( s.data == null ) || ( s.data.length == 0 );
+        s.data.forEach( function( item ) {
+            item.freq /= 100;
+        });
     }
 }
 
@@ -259,6 +262,7 @@ function checkController( Log ) {
     return vm;
 
     function check() {
+        vm.cs = vm.cs.toUpperCase();
         if ( Log.data ) {
             vm.found = Log.data.filter( function( item ) {
                 return item.cs == vm.cs; 

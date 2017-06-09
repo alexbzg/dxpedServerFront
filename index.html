@@ -20,7 +20,7 @@
         <script src="angular-ymaps.min.js"></script>
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
-        <script src="dxpApp.module.js?version=0.0.0.1"></script>
+        <script src="dxpApp.module.js?version=0.0.0.2"></script>
         <script src="storage.service.js"></script>
 
 </head>
@@ -78,7 +78,7 @@
                         <td class="mycall" style="border-top:none; border-left: none;">&nbsp;</td>
                         <td class="date head">date</td>
                         <td class="time head">time</td>
-                        <td class="band head">band</td>
+                        <td class="band head">freq</td>
                         <td class="mode head">mode</td>
                         <td class="urcall head">callsign</td>
                         <td class="rst head">rst/rst</td>
@@ -114,7 +114,7 @@
                         <td class="mycall" style="border-top:none; border-left: none;">&nbsp;</td>
                         <td class="date head">date</td>
                         <td class="time head">time</td>
-                        <td class="band head">band</td>
+                        <td class="band head">freq</td>
                         <td class="mode head">mode</td>
                         <td class="urcall head">callsign</td>
                         <td class="rst head">rst/rst</td>
@@ -126,11 +126,11 @@
                     <tr ng-repeat="spot in vm.found">
                         <td class="mycall">{{spot.myCS}}</td>
                         <td class="date">{{spot.date}}</td>
-                        <td class="time">{{spot.time}}z</td>
+                        <td class="time">{{spot.time}}</td>
                         <td class="band">{{spot.freq}}</td>
                         <td class="mode">{{spot.mode}}</td>
                         <td class="urcall">{{spot.cs}}</td>
-                        <td class="rst">{{spot.rst}}</td>
+                        <td class="rst">{{spot.rcv}}/{{spot.snt}}</td>
                         <td class="rda">{{spot.rda}}</td>
                         <td class="rafa">{{spot.rafa}}</td>
                         <td class="wff">{{spot.wff}}</td>
@@ -140,7 +140,7 @@
             </div>
 
 
-            <div id="gps_map" ng-show="vmTabs.active() == 'map'">
+            <div id="gps_map" ng-if="vmTabs.active() == 'map'">
                 <div id="map" ng-controller="mapController as vm">
                     <yandex-map center="vm.map.center" zoom="vm.map.zoom">
                         <ymap-marker ng-if="vm.data.location" 
@@ -152,7 +152,7 @@
                 <!-- --><br/><br/><br/><br/>
                 <b>Маршрут экспедиции</b><br/>
 
-                <iframe src="https://www.google.com/maps/d/embed?mid=1ePNGgVf5c1NGAHz8sPmfOKSymls&z=7" width="1100" height="480"></iframe>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1ePNGgVf5c1NGAHz8sPmfOKSymls&z=9" width="1100" height="480"></iframe>
                 
             </div>
                     
