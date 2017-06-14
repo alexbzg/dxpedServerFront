@@ -9,11 +9,11 @@ var module = angular
     .service( 'Chat', Chat )
     .service( 'Tabs', Tabs )
     .service( 'Log', Log )
-    .service( 'Status', Status )
+    .controller( 'statusController', statusController )
     .controller( 'newsController', newsController )
     .controller( 'spotsController', spotsController )
     .controller( 'mapController', mapController )
-    .controller( 'statusController', statusController )
+    .controller( 'lastQsoController', lastQsoController )
     .controller( 'tabsController', tabsController )
     .controller( 'checkController', checkController )
     .controller( 'logController', logController )
@@ -97,16 +97,13 @@ function Spots( DataServiceFactory ) {
     return DataServiceFactory( "/rda/spots.json" );
 }
 
-function Status( DataServiceFactory ) {
-    return DataServiceFactory( "/rda/status.json" );
-}
-
-function Log( DataServiceFactory ) {
+function Log( DataServiceFactory, Tabs ) {
     var s = DataServiceFactory( "/rda/qso.json" );
     var empty = true;
     s.lastEntry = lastEntry;
     s.isEmpty = isEmpty;
     s.processData = processData;
+    s.tab = 'log';
 
     return s;
 
@@ -129,15 +126,69 @@ function Log( DataServiceFactory ) {
     }
 }
 
-function Tabs() {
+
+function Tabs( Storage ) {
+    var storageKey = 'dxpTabsRed';
     var active = 'log';
+    var mapInit = false;
+    var watch = [ 'news', 'log', 'chat' ];
+    var read = null;
+    var updated = {};
+
+    init();
+
     return {
         active: function() { return active; },
-        setActive: function(value) { active = value; }
+        setActive: setActive,
+        mapInit: function() { return mapInit; },
+        setUpdated: setUpdated,
+        unread: unread
     };
+
+    function init() {
+        read = Storage.load( storageKey, 'local' );
+        if (!read)
+            read = {};
+        watch.forEach( function(item) {
+            updated[item] = null;
+            if ( !(item in read) ) 
+                read[item] = null;
+        });
+    }
+
+    function toStorage() {
+        Storage.save( storageKey, read, 'local' );
+    }
+
+    function setActive( value ) { 
+        active = value; 
+        if ( value == 'map' )
+            mapInit = true;
+        if ( updated[value] ) {
+            read[value] = updated[value];        
+            toStorage();
+        }
+    }
+
+    function setUpdated( type, value ) {
+        if ( type in updated ) {
+            updated[type] = value;
+            if ( active == type ) {
+                read[type] = value;
+                toStorage();
+            }
+        }
+    }
+
+    function unread( type ) {
+        if ( updated[type] )
+            return read[type] != updated[type];
+        else
+            return false;
+    }
 }
 
-function DataServiceFactory( $http ) {
+function DataServiceFactory( $http, Tabs ) {
     return createDataService;
 
     function createDataService( url ) {
@@ -145,6 +196,7 @@ function DataServiceFactory( $http ) {
             load: load,
             data: null,
             url: url,
+            tab: null,
             processData: function() {} 
         };
         return s;
@@ -161,6 +213,8 @@ function DataServiceFactory( $http ) {
                 s.lm = response.headers( 'last-modified' ); 
                 s.data = response.data;
                 s.processData();
+                if (s.tab)
+                    Tabs.setUpdated( s.tab, s.lm );
                 return s.data;
             } else
                 return false;
@@ -172,14 +226,16 @@ function DataServiceFactory( $http ) {
     }
 }
 
-function News( DataServiceFactory ) {
-    return DataServiceFactory(  "/rda/news.json" );
+function News( DataServiceFactory, Tabs ) {
+    var s = DataServiceFactory(  "/rda/news.json" );
+    s.tab = 'news';
+    return s;
 }
 
-function Chat( DataServiceFactory, $http ) {
+function Chat( DataServiceFactory, $http, Tabs ) {
     var s = DataServiceFactory(  "/rda/chat.json" );
     var sendURL = "/dxped/uwsgi/chat";
-
+    s.tab = 'chat';
     s.send = send;
 
     return s;
@@ -208,6 +264,8 @@ function tabsController( Tabs ) {
     var vm = this;
     vm.active = Tabs.active;
     vm.setActive = Tabs.setActive;
+    vm.mapInit = Tabs.mapInit;
+    vm.unread = Tabs.unread;
     return vm;
 }
 
@@ -219,13 +277,28 @@ function logController( Log, $interval ) {
     return vm;
 }
 
-function statusController( Log ) {
+function lastQsoController( Log ) {
     var vm = this;
     vm.lastLogEntry = Log.lastEntry;
     vm.logEmpty = Log.isEmpty;
     return vm;
 }
 
+function statusController( Location, $interval ) {
+    var vm = this;
+    vm.online = false;
+    check();
+    $interval( check, 1000 );
+    return vm;
+
+    function check() {
+        if ( Location.data && Location.data.ts ) 
+            vm.online = Math.floor(Date.now() / 1000) - Location.data.ts < 300;
+        else
+            vm.online = false;
+    }
+
+}
 
 function chatController( Chat, $interval, Storage ) {
     DataController.call( this, Chat, 60000, $interval );

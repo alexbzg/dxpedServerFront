@@ -20,13 +20,16 @@
         <script src="angular-ymaps.min.js"></script>
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
-        <script src="dxpApp.module.js?version=0.0.0.2"></script>
+        <script src="dxpApp.module.js?version=0.0.0.5"></script>
         <script src="storage.service.js"></script>
 
 </head>
-<body>
+<body ng-cloak>
         <div id="expedition">
-            <div id="status" ng-controller="statusController as vm" ng-hide="vm.logEmpty()">
+            <div id="status" ng-controller="statusController as vm">
+                <img ng-src="/images/{{vm.online ? 'icon_connected.jpg' : 'icon_no_connection.jpg'}}"/>
+            </div>
+            <div id="last_qso" ng-controller="lastQsoController as vm" ng-hide="vm.logEmpty()">
                 <span class="grey">
                     <span class="small">{{vm.lastLogEntry().date}}</span> 
                     {{vm.lastLogEntry().time}} &nbsp;&nbsp;&nbsp; 
@@ -43,19 +46,22 @@
 
         <div id="tabs" ng-controller="tabsController as vm">
             <div class="tab" id="tab_news" 
-                ng-class="{active_tab: vm.active() == 'news'}" ng-click="vm.setActive( 'news' )">News</div>
+                ng-class="{active_tab: vm.active() == 'news', updated_tab: vm.unread( 'news' )}" 
+                ng-click="vm.setActive( 'news' )">News</div>
             <div class="tab" id="tab_log" 
-                ng-class="{active_tab: vm.active() == 'log'}" ng-click="vm.setActive( 'log' )">Online log</div>
+                ng-class="{active_tab: vm.active() == 'log', updated_tab: vm.unread( 'log' )}" 
+                ng-click="vm.setActive( 'log' )">Online log</div>
             <div class="tab" id="tab_check" 
                 ng-class="{active_tab: vm.active() == 'check'}" ng-click="vm.setActive( 'check' )">Call check</div>
             <div class="tab" id="tab_map"
-                ng-class="{active_tab: vm.active() == 'map'}" ng-click="vm.setActive( 'map' )">Map</div>
+                ng-class="{active_tab: vm.active() == 'map'}" ng-click="vm.setActive( 'map' ) ">Map</div>
             <div class="tab" id="tab_adxc"
                 ng-class="{active_tab: vm.active() == 'adxcluster'}" ng-click="vm.setActive('adxcluster')">
                 ADXcluster
             </div>
             <div class="tab" id="tab_chat"
-                ng-class="{active_tab: vm.active() == 'chat'}" ng-click="vm.setActive( 'chat' )">
+                ng-class="{active_tab: vm.active() == 'chat', updated_tab: vm.unread( 'chat' )}" 
+                ng-click="vm.setActive( 'chat' )">
                 Online chat
             </div>
             <div class="tab" id="tab_donate"
@@ -76,16 +82,16 @@
                 <table id="log">
                     <tr>
                         <td class="mycall" style="border-top:none; border-left: none;">&nbsp;</td>
-                        <td class="date head">date</td>
-                        <td class="time head">time</td>
-                        <td class="band head">freq</td>
-                        <td class="mode head">mode</td>
-                        <td class="urcall head">callsign</td>
-                        <td class="rst head">rst/rst</td>
-                        <td class="rda head">rda</td>
-                        <td class="rafa head">rafa</td>
-                        <td class="wff head">wff</td>
-                        <td class="locator head">locator</td>
+                        <td class="date head">Date</td>
+                        <td class="time head">Time</td>
+                        <td class="band head">Freq</td>
+                        <td class="mode head">Mode</td>
+                        <td class="urcall head">Callsign</td>
+                        <td class="rst head">RST/RST</td>
+                        <td class="rda head">RDA</td>
+                        <td class="rafa head">RAFA</td>
+                        <td class="wff head">WFF</td>
+                        <td class="locator head">Locator</td>
                     </tr>
                     <tr ng-repeat="spot in vm.data">
                         <td class="mycall">{{spot.myCS}}</td>
@@ -112,16 +118,16 @@
                 <table id="log" ng-if="vm.found">
                     <tr>
                         <td class="mycall" style="border-top:none; border-left: none;">&nbsp;</td>
-                        <td class="date head">date</td>
-                        <td class="time head">time</td>
-                        <td class="band head">freq</td>
-                        <td class="mode head">mode</td>
-                        <td class="urcall head">callsign</td>
-                        <td class="rst head">rst/rst</td>
-                        <td class="rda head">rda</td>
-                        <td class="rafa head">rafa</td>
-                        <td class="wff head">wff</td>
-                        <td class="locator head">locator</td>
+                        <td class="date head">Date</td>
+                        <td class="time head">Time</td>
+                        <td class="band head">Freq</td>
+                        <td class="mode head">Mode</td>
+                        <td class="urcall head">Callsign</td>
+                        <td class="rst head">RST/RST/rst</td>
+                        <td class="rda head">RDA</td>
+                        <td class="rafa head">RAFA</td>
+                        <td class="wff head">WFF</td>
+                        <td class="locator head">Locator</td>
                     </tr>
                     <tr ng-repeat="spot in vm.found">
                         <td class="mycall">{{spot.myCS}}</td>
@@ -140,7 +146,7 @@
             </div>
 
 
-            <div id="gps_map" ng-if="vmTabs.active() == 'map'">
+            <div id="gps_map" ng-show="vmTabs.active() == 'map'">
                 <div id="map" ng-controller="mapController as vm">
                     <yandex-map center="vm.map.center" zoom="vm.map.zoom">
                         <ymap-marker ng-if="vm.data.location" 
@@ -152,7 +158,7 @@
                 <!-- --><br/><br/><br/><br/>
                 <b>Маршрут экспедиции</b><br/>
 
-                <iframe src="https://www.google.com/maps/d/embed?mid=1ePNGgVf5c1NGAHz8sPmfOKSymls&z=9" width="1100" height="480"></iframe>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1janWpa8H-NYOSoUWvb2OMkkXWDE&z=8" width="1100" height="480" ng-if="vmTabs.mapInit()"></iframe>
                 
             </div>
                     

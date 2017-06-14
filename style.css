@@ -44,20 +44,33 @@ input{
     line-height: 1em;
     vertical-align: top;
 }
-#status{ 
-    width: 300px;
+#last_qso{ 
+    width: 350px;
     font-size: 18px;
     background-color: #fff;
     display: inline-block;
     float: right;
     margin: 0;
-    padding: 7px;
+    padding: 7px 0px;
     border: 1px solid #aaa;
     border-radius: 10px;
     box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
     vertical-align: top;
     line-height: 1.3em;
     font-weight: bold;
+}
+#status{ 
+    width: 150px;
+    background-color: #fff;
+    display: inline-block;
+    float: left;
+    margin: 0;
+    padding: 5px 0px;
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+    vertical-align: top;
+    line-height: 1.3em;
 }
 .on{
     background: #fff url("/images/on_air.jpg") 10px 10px no-repeat;
@@ -85,7 +98,18 @@ input{
     font-size: 14px;
     text-align: center;
     line-height: 1em;
-    background: #f5f5f5  url("/images/rda_tab_bg.jpg") bottom left repeat-x;
+    background: #f5f5f5  url("/images/rda_tab_bg.jpg") bottom left no-repeat;
+    border: 1px solid #bbb;
+    border-radius: 10px 10px 0px 0px;
+    cursor: pointer;
+}
+.updated_tab{
+    display: inline-block;   
+    padding: 5px 30px 5px 20px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 1em;
+    background: #f5f5f5  url("/images/rda_tab_bg.jpg") bottom right no-repeat;
     border: 1px solid #bbb;
     border-radius: 10px 10px 0px 0px;
     cursor: pointer;
