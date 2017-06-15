@@ -179,7 +179,7 @@ table#log td.head{
     background-color: #f5f5f5;
 }
 table#log tr.new_qso{ 
-    background: #fff url("/images/bg_new_qso.gif") top left;
+    background-color: #DFFAFD;
 }
 
 

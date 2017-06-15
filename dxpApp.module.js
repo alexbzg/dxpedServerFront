@@ -97,7 +97,7 @@ function Spots( DataServiceFactory ) {
     return DataServiceFactory( "/rda/spots.json" );
 }
 
-function Log( DataServiceFactory, Tabs,  ) {
+function Log( DataServiceFactory, Tabs, $timeout ) {
     var s = DataServiceFactory( "/rda/qso.json" );
     var empty = true;
     s.lastEntry = lastEntry;
@@ -122,14 +122,19 @@ function Log( DataServiceFactory, Tabs,  ) {
     function processData() {
         empty = ( s.data == null ) || ( s.data.length == 0 );
         var n = s.prev != null;
+        var nItems = [];
         s.data.forEach( function( item ) {
             item.freq /= 100;
             if ( n && (s.prev.date != item.date || s.prev.time != 
-                    item.time || s.prev.cs != item.cs ))
+                    item.time || s.prev.cs != item.cs )) {
                 item.new = true;
-            else
+                nItems.push( item );
+            } else
                 n = false;
         });
+        $timeout( function() {
+            nItems.forEach( function( item ) { item.new = false; } );
+        }, 5000 );
         s.prev = s.data[0];
     }
 }
