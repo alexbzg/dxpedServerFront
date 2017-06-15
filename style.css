@@ -45,38 +45,30 @@ input{
     vertical-align: top;
 }
 #last_qso{ 
-    width: 350px;
-    font-size: 18px;
+    width: 300px;
+    font-size: 16px;
     background-color: #fff;
     display: inline-block;
     float: right;
     margin: 0;
-    padding: 7px 0px;
+    padding: 5px 0px;
     border: 1px solid #aaa;
     border-radius: 10px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     vertical-align: top;
-    line-height: 1.3em;
+    line-height: 1.1em;
     font-weight: bold;
 }
 #status{ 
-    width: 150px;
+    width: 110px;
     background-color: #fff;
     display: inline-block;
     float: left;
     margin: 0;
-    padding: 5px 0px;
+    padding: 5px 5px;
     border: 1px solid #aaa;
     border-radius: 10px;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-    vertical-align: top;
-    line-height: 1.3em;
-}
-.on{
-    background: #fff url("/images/on_air.jpg") 10px 10px no-repeat;
-}
-.off{
-    background: #fff url("/images/off_air.jpg") 10px 10px no-repeat;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -186,9 +178,9 @@ table#log td.urcall{
 table#log td.head{ 
     background-color: #f5f5f5;
 }
-
-
-
+table#log tr.new_qso{ 
+    background: #fff url("/images/bg_new_qso.gif") top left;
+}
 
 
 

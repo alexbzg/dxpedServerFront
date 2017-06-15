@@ -97,13 +97,14 @@ function Spots( DataServiceFactory ) {
     return DataServiceFactory( "/rda/spots.json" );
 }
 
-function Log( DataServiceFactory, Tabs ) {
+function Log( DataServiceFactory, Tabs,  ) {
     var s = DataServiceFactory( "/rda/qso.json" );
     var empty = true;
     s.lastEntry = lastEntry;
     s.isEmpty = isEmpty;
     s.processData = processData;
     s.tab = 'log';
+    s.prev = null;
 
     return s;
 
@@ -120,9 +121,16 @@ function Log( DataServiceFactory, Tabs ) {
 
     function processData() {
         empty = ( s.data == null ) || ( s.data.length == 0 );
+        var n = s.prev != null;
         s.data.forEach( function( item ) {
             item.freq /= 100;
+            if ( n && (s.prev.date != item.date || s.prev.time != 
+                    item.time || s.prev.cs != item.cs ))
+                item.new = true;
+            else
+                n = false;
         });
+        s.prev = s.data[0];
     }
 }
 
