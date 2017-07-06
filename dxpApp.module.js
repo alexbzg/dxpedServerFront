@@ -1,5 +1,5 @@
 var module = angular
-    .module( 'dxpApp', [ 'ymaps', 'ngSanitize', 'bootstrapLightbox' ] )
+    .module( 'dxpApp', [ 'yaMap', 'ngSanitize', 'bootstrapLightbox' ] )
     .directive('compile', compileDirective )
     .directive( 'lightboxImage', lightboxImage )
     .factory( 'DataServiceFactory', DataServiceFactory )
@@ -9,15 +9,16 @@ var module = angular
     .service( 'Chat', Chat )
     .service( 'Tabs', Tabs )
     .service( 'Log', Log )
+    .service( 'Users', Users )
     .controller( 'statusController', statusController )
     .controller( 'newsController', newsController )
     .controller( 'spotsController', spotsController )
-    .controller( 'mapController', mapController )
+    .controller( 'mapController', mapController ) 
     .controller( 'lastQsoController', lastQsoController )
     .controller( 'tabsController', tabsController )
     .controller( 'checkController', checkController )
     .controller( 'logController', logController )
-    .controller( 'chatController', chatController )
+    .controller( 'chatController', chatController ) 
    ;
 
 
@@ -140,9 +141,9 @@ function Log( DataServiceFactory, Tabs, $timeout ) {
 }
 
 
-function Tabs( Storage ) {
+function Tabs( Storage, $rootScope ) {
     var storageKey = 'dxpTabsRed';
-    var active = 'log';
+    var active = null;
     var mapInit = false;
     var watch = [ 'news', 'log', 'chat' ];
     var read = null;
@@ -167,6 +168,7 @@ function Tabs( Storage ) {
             if ( !(item in read) ) 
                 read[item] = null;
         });
+        setActive( 'log' );
     }
 
     function toStorage() {
@@ -174,12 +176,15 @@ function Tabs( Storage ) {
     }
 
     function setActive( value ) { 
-        active = value; 
-        if ( value == 'map' )
-            mapInit = true;
-        if ( updated[value] ) {
-            read[value] = updated[value];        
-            toStorage();
+        if ( active != value ) {
+            active = value; 
+            if ( value == 'map' )
+                mapInit = true;
+            if ( updated[value] ) {
+                read[value] = updated[value];        
+                toStorage();
+            }
+            $rootScope.$emit( 'tabSwitch' );
         }
     }
 
@@ -265,6 +270,68 @@ function Chat( DataServiceFactory, $http, Tabs ) {
 
 }
 
+function Users( DataServiceFactory, Storage, $http, $rootScope, Tabs, $interval ) {
+    var s = DataServiceFactory(  "/rda/users.json" );
+    var sendURL = "/dxped/uwsgi/users";
+    var storageKey = 'dxpChatCS';
+    var users = [];
+    s.cs = Storage.load( storageKey, 'local' );
+    s.send = send;
+    s.setCS = setCS;
+    s.processData = processData;
+    s.users = function() { return users; };
+    $rootScope.$on( 'tabSwitch', sendTab );
+    sendTab();
+    $interval( sendTab, 60000 );
+    s.load();
+    $interval( s.load, 1000 );
+
+    return s;
+
+    function sendTab() {
+        send( { 'tab': Tabs.active() } );
+    }
+
+    function processData() {
+        users = [];
+        var ts = Math.floor(Date.now() / 1000);
+        for ( var cs in s.data )
+            if ( s.data[cs].ts != null && ts - s.data[cs].ts < 60 )
+                users.push( { cs: cs, tab: s.data[cs].tab } );
+        users.sort( function( a, b ) {
+            if ( a.cs < b.cs )
+                return -1;
+            if ( a.cs > b.cs )
+                return 1;
+            if ( a.cs == b.cs )
+                return 0;
+        } );
+    }
+
+
+    function setCS( cs ) {
+        if ( s != s.cs ) {
+            send( { 'delete': 1 } );
+            s.cs = cs;
+            Storage.save( storageKey, s.cs, 'local' );
+            sendTab();
+        }
+    }
+   
+    function send( data ) {
+        if ( s.cs ) {
+            data.cs = s.cs;
+            return $http.post( sendURL, data )
+                .catch( sendFailed );
+        }
+    }
+
+    function sendFailed( error ) {
+        console.log( sendURL + ' XHR failed: ' + error.data );
+    }
+
+}
+
 
 function newsController( News, $interval ) {
     DataController.call( this, News, 60000, $interval );
@@ -313,22 +380,23 @@ function statusController( Location, $interval ) {
 
 }
 
-function chatController( Chat, $interval, Storage ) {
+function chatController( Chat, $interval, Users ) {
     DataController.call( this, Chat, 60000, $interval );
-    var storageKey = 'dxpChatCS';
     var vm = this;
 
-    vm.cs = Storage.load( storageKey, 'local' );
+    vm.cs = Users.cs;
     vm.send = send;
+    vm.users = Users.users;
 
 
     return vm;
 
     function send() {
-        Storage.save( storageKey, vm.cs, 'local' );
-        Chat.send( { cs: vm.cs, text: vm.text } )
-            .then( sendComplete )
-            .catch( sendFailed );
+        Users.setCS( vm.cs );
+        if ( vm.text )
+            Chat.send( { cs: vm.cs, text: vm.text } )
+                .then( sendComplete )
+                .catch( sendFailed );
     }
 
     function sendComplete() {
@@ -339,7 +407,7 @@ function chatController( Chat, $interval, Storage ) {
     function sendFailed( error ) {
         window.alert( "Sorry, there was an error. Please try again later" );
     }
-   
+  
 }
 
 function checkController( Log ) {
@@ -372,13 +440,39 @@ function mapController( Location, $interval ) {
     var vm = this;
     vm.processData = processData;
 
-    vm.map = { center: [ 45, 39 ], zoom: 11 };
+    vm.center = [39.0099183333333, 45.1228633333333 ];
+    vm.afterMapInit = afterMapInit;
 
     return vm;
 
     function processData() {
-        if ( vm.data.location )
-            vm.map.center = vm.data.location;
+        if ( vm.data.location ) {
+            setCenter();
+            vm.currentLocation = {
+                geometry: {
+                    type: "Point",
+                    coordinates: [vm.data.location[1], vm.data.location[0]]
+                },
+                // Свойства.
+                properties: {
+                    balloonContent:vm.data.date + ' ' + vm.data.time }
+            } 
+        } else
+            vm.currentLocation = null;
+    }
+
+    function afterMapInit( map ) {
+        vm.map = map;
+        setCenter();
+        var gpx = ymaps.geoXml.load("http://73.ru/rda/route.xml")
+            .then( function (res) {
+                         map.geoObjects.add(res.geoObjects);
+                             });
+    }
+
+    function setCenter() {
+        if (vm.map && vm.currentLocation) 
+            vm.map.setCenter( vm.currentLocation.geometry.coordinates );
     }
 
 }

@@ -17,10 +17,11 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js"></script>
         <script src="ui-bootstrap-tpls-2.5.0.min.js"></script>        
         <script src="angular-bootstrap-lightbox.min.js"></script>        
-        <script src="angular-ymaps.min.js"></script>
+        <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>        
+        <script src="ya-map-2.1.js"></script>
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
-        <script src="dxpApp.module.js?version=0.0.0.5"></script>
+        <script src="dxpApp.module.js?version=0.0.0.7"></script>
         <script src="storage.service.js"></script>
 
 </head>
@@ -148,11 +149,13 @@
 
             <div id="gps_map" ng-show="vmTabs.active() == 'map'">
                 <div id="map" ng-controller="mapController as vm">
-                    <yandex-map center="vm.map.center" zoom="vm.map.zoom">
-                        <ymap-marker ng-if="vm.data.location" 
-                        properties="{balloonContent:vm.data.date + ' ' + vm.data.time}" 
-                        coordinates="vm.data.location"></ymap-marker>
-                    </yandex-map>
+                    <ya-map ya-zoom="11" ya-center="vm.center"  
+                        ya-after-init="vm.afterMapInit($target)">
+                        <ya-geo-object ng-if="vm.currentLocation" 
+                            ya-source="vm.currentLocation"
+                            ya-options="{preset: 'islands#dotIcon',iconColor: '#3b5998'}">
+                        </ya-geo-object>
+                    </ya-map>
                 </div>
                 Обновление - каждые 5 минут.
                 <!-- --><br/><br/><br/><br/>
@@ -182,9 +185,9 @@
 
             <div id="donate" ng-show="vmTabs.active() == 'donate'">
                 <div id="sponsor">
-                    Спонсоры экспедиции: <b>R7AB &nbsp; R7DX</b>.  <!-- Expedition's sponsors:   -->
+                    Спонсоры экспедиции: <b>R7AB &nbsp; R7DX</b>.  <!-- Expedition's sponsors:   
                     <br/>
-                    Большое спасибо за финансовую поддержку: &nbsp; <b>RU9SO</b> + 1 неизвестный HAM. :)<br/> 
+                    Большое спасибо за финансовую поддержку: &nbsp; <b>RU9SO &nbsp; RA9CMO &nbsp; R1CF &nbsp; RW3DY</b>. :)<br/> -->
                     <!--Thank you very much for your financial support: &nbsp; <b>PA1NL &nbsp; DL7VOG</b>. -->
                 </div>
 
@@ -221,7 +224,16 @@
                         <td class="note">&nbsp;</td>
                     </tr>
                 </table>
-
+                <div id="chat_info">
+                    <div class="chat_info_title">Chat page</div>
+                    <div class="chat_info_users1">
+                        <span ng-repeat="user in vm.users()| filter: {'tab': 'chat'}">{{user.cs}}<br/></span>
+                    </div>
+                    <div class="chat_info_title">Other pages</div>
+                    <div class="chat_info_users2">
+                        <span ng-repeat="user in vm.users() | filter: {'tab': '!chat'}">{{user.cs}}<br/></span>
+                    </div>
+                </div>
                 <table id="chat_window">
                     <tr ng-repeat="msg in vm.data" ng-class="{admin: msg.admin}"> 
                         <td class="call">
