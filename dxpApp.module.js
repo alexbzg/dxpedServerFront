@@ -357,10 +357,11 @@ function logController( Log, $interval ) {
     return vm;
 }
 
-function lastQsoController( Log ) {
+function lastQsoController( Log, Location ) {
     var vm = this;
     vm.lastLogEntry = Log.lastEntry;
     vm.logEmpty = Log.isEmpty;
+    vm.location = Location;
     return vm;
 }
 
@@ -464,10 +465,16 @@ function mapController( Location, $interval ) {
     function afterMapInit( map ) {
         vm.map = map;
         setCenter();
-        var gpx = ymaps.geoXml.load("http://73.ru/rda/route.xml")
+        var gpx = ymaps.geoXml.load("http://73.ru/rda/route.xml?v=0.0.0.2")
             .then( function (res) {
-                         map.geoObjects.add(res.geoObjects);
-                             });
+/*                res.geoObjects.each( function( o ) {
+                    if ( o.geometry && o.geometry.getType() == 'Point' )
+                        o.options.set( 'iconColor', '#ff0000' );
+                });*/
+                map.geoObjects.add(res.geoObjects);
+            }, function (err) {
+                    console.log('Ошибка: ' + err);}
+            );
     }
 
     function setCenter() {

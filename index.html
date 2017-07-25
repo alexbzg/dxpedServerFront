@@ -21,7 +21,7 @@
         <script src="ya-map-2.1.js"></script>
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
-        <script src="dxpApp.module.js?version=0.0.0.7"></script>
+        <script src="dxpApp.module.js?version=0.0.0.10"></script>
         <script src="storage.service.js"></script>
 
 </head>
@@ -38,7 +38,7 @@
                 </span><br/>
                 <span class="small" ng-show="vm.lastLogEntry().rda">RDA</span> {{vm.lastLogEntry().rda}} &nbsp; 
                 <span class="small" ng-show="vm.lastLogEntry().rafa">RAFA</span> {{vm.lastLogEntry().rafa}} 
-                &nbsp; {{vm.lastLogEntry().loc}}
+                &nbsp; {{vm.location.loc}}
             </div>
             <a href="/"><img id="logo" src="/images/r7ab_logo3.jpg" border="0" height="39" width="150"></a><br/>
             {{vm.title}}
@@ -153,15 +153,12 @@
                         ya-after-init="vm.afterMapInit($target)">
                         <ya-geo-object ng-if="vm.currentLocation" 
                             ya-source="vm.currentLocation"
-                            ya-options="{preset: 'islands#dotIcon',iconColor: '#3b5998'}">
+                            ya-options="{preset: 'islands#dotIcon',iconColor: '#ff0000'}">
                         </ya-geo-object>
                     </ya-map>
                 </div>
                 Обновление - каждые 5 минут.
-                <!-- --><br/><br/><br/><br/>
-                <b>Маршрут экспедиции</b><br/>
 
-                <iframe src="https://www.google.com/maps/d/embed?mid=1janWpa8H-NYOSoUWvb2OMkkXWDE&z=8" width="1100" height="480" ng-if="vmTabs.mapInit()"></iframe>
                 
             </div>
                     
@@ -185,9 +182,9 @@
 
             <div id="donate" ng-show="vmTabs.active() == 'donate'">
                 <div id="sponsor">
-                    Спонсоры экспедиции: <b>R7AB &nbsp; R7DX</b>.  <!-- Expedition's sponsors:   
+                    Спонсоры экспедиции: <b>R7AB &nbsp; R7DX</b>.  <!-- Expedition's sponsors:   --> 
                     <br/>
-                    Большое спасибо за финансовую поддержку: &nbsp; <b>RU9SO &nbsp; RA9CMO &nbsp; R1CF &nbsp; RW3DY</b>. :)<br/> -->
+                    Большое спасибо за финансовую поддержку: &nbsp; <b>RA9CMO &nbsp; UA3AAJ &nbsp; R3AT</b>.
                     <!--Thank you very much for your financial support: &nbsp; <b>PA1NL &nbsp; DL7VOG</b>. -->
                 </div>
 
