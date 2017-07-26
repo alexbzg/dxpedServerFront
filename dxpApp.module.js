@@ -361,8 +361,12 @@ function lastQsoController( Log, Location ) {
     var vm = this;
     vm.lastLogEntry = Log.lastEntry;
     vm.logEmpty = Log.isEmpty;
-    vm.location = Location;
+    vm.location = getLocationData; 
     return vm;
+
+    function getLocationData() {
+        return Location.data;
+    }
 }
 
 function statusController( Location, $interval ) {
