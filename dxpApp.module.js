@@ -125,7 +125,8 @@ function Log( DataServiceFactory, Tabs, $timeout ) {
         var n = s.prev != null;
         var nItems = [];
         s.data.forEach( function( item ) {
-            item.freq /= 100;
+            if ( item.freq.indexOf( '.' ) == -1 )
+                item.freq /= 100;
             if ( n && (s.prev.date != item.date || s.prev.time != 
                     item.time || s.prev.cs != item.cs )) {
                 item.new = true;
@@ -460,7 +461,9 @@ function mapController( Location, $interval ) {
                 },
                 // Свойства.
                 properties: {
-                    balloonContent:vm.data.date + ' ' + vm.data.time }
+                    balloonContent: vm.data.date + ' ' + vm.data.time + '<br/>' +
+                        ' speed: ' + vm.data.speed.toFixed( 1 ) + ' km/h'
+                }
             } 
         } else
             vm.currentLocation = null;
@@ -469,7 +472,7 @@ function mapController( Location, $interval ) {
     function afterMapInit( map ) {
         vm.map = map;
         setCenter();
-        var gpx = ymaps.geoXml.load("http://73.ru/rda/route.xml?v=0.0.0.2")
+        var gpx = ymaps.geoXml.load("http://73.ru/rda/route.xml?v=0.0.0.4")
             .then( function (res) {
 /*                res.geoObjects.each( function( o ) {
                     if ( o.geometry && o.geometry.getType() == 'Point' )
