@@ -95,7 +95,20 @@ function Location( DataServiceFactory ) {
 }
 
 function Spots( DataServiceFactory ) {
-    return DataServiceFactory( "/rda/spots.json" );
+    var s =  DataServiceFactory( "/rda/spots.json" );
+    s.processData = processData;
+    return s;
+
+    function processData() {
+        s.data.forEach( function( item ) {
+            if ( item.awards.RDA && 
+                    item.text.indexOf( item.awards.RDA.value ) == -1 )
+                item.text += ' RDA ' + item.awards.RDA.value;
+            if ( item.cs.indexOf( 'R7AB' ) != -1 )
+                item.highlight = true;
+        });
+    }
+
 }
 
 function Log( DataServiceFactory, Tabs, $timeout ) {

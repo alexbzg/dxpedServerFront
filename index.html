@@ -10,7 +10,7 @@
 
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link href="style.css" rel="stylesheet" type="text/css">
+        <link href="style.css?v=0.0.0.1" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="angular-bootstrap-lightbox.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">        
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
@@ -21,7 +21,7 @@
         <script src="ya-map-2.1.js"></script>
         <script src="moment.min.js"></script>
         <script src="moment-timezone-with-data-2010-2020.min.js"></script>
-        <script src="dxpApp.module.js?version=0.0.0.15"></script>
+        <script src="dxpApp.module.js?version=0.0.0.17"></script>
         <script src="storage.service.js"></script>
 
 </head>
@@ -170,7 +170,7 @@
                         <td class="time">{{spot.time}}z</td>
                         <td class="band">{{spot.freq}}</td>
                         <td class="mode">{{spot.subMode ? spot.subMode : spot.mode}}</td>
-                        <td class="call">{{spot.cs}}</td>
+                        <td class="call" ng-class="{highlight: spot.highlight}">{{spot.cs}}</td>
                         <td class="text">{{spot.text}}</td>
                         <td class="spotter">{{spot.de}}</td>
                     </tr>
@@ -184,7 +184,7 @@
                 <div id="sponsor"><br/>
                     Спонсоры экспедиции: <b>R7AB &nbsp; R7DX &nbsp; RA4LW</b>.  <!-- Expedition's sponsors:   --> 
                     <br/><br/>
-                    Большое спасибо за финансовую поддержку: &nbsp; <b>RA9CMO &nbsp; UA3AAJ &nbsp; R3AT &nbsp; DL7VOG &nbsp; UI8U &nbsp; UA2FF &nbsp; R1CF &nbsp; RN2FA &nbsp; UA3AKO &nbsp; UA2FC &nbsp; RN7A &nbsp; RU6K &nbsp; RW2B &nbsp; RW3O &nbsp; RA6AR &nbsp; RU9SO &nbsp; UA6GG &nbsp; RV3LO &nbsp; RA4PQ &nbsp; F6FNG &nbsp; SM5DGE &nbsp; UA0WW &nbsp; F6EYB &nbsp; UA9CGL &nbsp; RD0WA &nbsp; DL6KVA &nbsp; SM4EMO &nbsp; R0QA &nbsp; SM5ELV &nbsp; SM5FWW &nbsp; SM6DHU &nbsp; SM1NJC &nbsp; S52GP &nbsp; RA3TIO</b>.<br/><br/>
+                    Большое спасибо за финансовую поддержку: &nbsp; <b>RA9CMO &nbsp; UA3AAJ &nbsp; R3AT &nbsp; DL7VOG &nbsp; UI8U &nbsp; UA2FF &nbsp; R1CF &nbsp; RN2FA &nbsp; UA3AKO &nbsp; UA2FC &nbsp; RN7A &nbsp; RU6K &nbsp; RW2B &nbsp; RW3O &nbsp; RA6AR &nbsp; RU9SO &nbsp; UA6GG &nbsp; RV3LO &nbsp; RA4PQ &nbsp; F6FNG &nbsp; SM5DGE &nbsp; UA0WW &nbsp; F6EYB &nbsp; UA9CGL &nbsp; RD0WA &nbsp; DL6KVA &nbsp; SM4EMO &nbsp; R0QA &nbsp; SM5ELV &nbsp; SM5FWW &nbsp; SM6DHU &nbsp; SM1NJC &nbsp; S52GP &nbsp; RA3TIO &nbsp; UA6F &nbsp; UA3EDQ &nbsp; UA4HY &nbsp; RW4HM &nbsp; UA4NBA &nbsp; EA3NT &nbsp; SM6BZV &nbsp; DL5MG &nbsp; G4RCG &nbsp; SM2YIZ &nbsp; DK2AI &nbsp; UA4NN &nbsp; DL5CT &nbsp; DL5WW &nbsp; RN3RY</b>.<br/><br/>
                 </div>
 
                 <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?account=41001249563216&quickpay=donate&payment-type-choice=on&default-sum=&targets=R7AB+RDA+expedition&project-name=R7AB+RDA+expedition&project-site=http%3A%2F%2Fwww.73.ru%2Frda%2F&button-text=01&comment=on&hint=%D0%92%D0%B0%D1%88+%D0%BF%D0%BE%D0%B7%D1%8B%D0%B2%D0%BD%D0%BE%D0%B9+%2B+%D1%81%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B4%D0%BB%D1%8F+%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D0%B4%D0%B8%D1%86%D0%B8%D0%B8&successURL=http%3A%2F%2Fwww.73.ru%2Frda%2F" width="436" height="161"></iframe>
